@@ -1,0 +1,1 @@
+# go-failure-sample
