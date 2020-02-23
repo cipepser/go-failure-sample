@@ -51,6 +51,9 @@ func main() {
 error occurred: NotFound
 ```
 
+## エラーをwrapする
+
+
 
 
 

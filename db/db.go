@@ -1,10 +1,38 @@
 package db
 
 import (
+	"fmt"
 	"github.com/morikuni/failure"
 )
 
-var NotFound failure.StringCode = "NotFound"
+var (
+	NotFound failure.StringCode = "NotFound"
+)
+
+type Customer struct {
+	id      int
+	name    string
+	address string
+}
+
+func NewCustomer(name, address string) *Customer {
+	c := &Customer{
+		id:      len(customers),
+		name:    name,
+		address: address,
+	}
+	customers = append(customers, c)
+	return c
+}
+
+var customers []*Customer
+
+func ShowCustomers() error {
+	for _, c := range customers {
+		fmt.Printf("%+v\n", *c)
+	}
+	return nil
+}
 
 type Client struct {
 	user string
