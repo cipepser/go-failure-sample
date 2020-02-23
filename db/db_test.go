@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/morikuni/failure"
 	"reflect"
 	"testing"
 )
@@ -83,6 +84,58 @@ func TestShowCustomers(t *testing.T) {
 					t.Errorf("customers(global state) = %v, want %v", *customers[i], *tt.want[i])
 				}
 
+			}
+		})
+	}
+	cleanUpCustomers()
+}
+
+func TestClient_GetName(t *testing.T) {
+	type fields struct {
+		user string
+	}
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr failure.StringCode
+	}{
+		{
+			name: "Alice",
+			args: args{
+				id: 0,
+			},
+			want:    "Alice",
+			wantErr: "",
+		},
+		{
+			name: "",
+			args: args{
+				id: -1,
+			},
+			want:    "",
+			wantErr: NotFound,
+		},
+	}
+
+	_ = NewCustomer("Alice", "alice@example.com")
+	_ = NewCustomer("Bob", "bob@example.com")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				user: tt.fields.user,
+			}
+			got, err := c.GetName(tt.args.id)
+			if err != nil && !failure.Is(err, tt.wantErr) {
+				t.Errorf("GetName() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("GetName() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -45,5 +45,10 @@ func NewClient(user string) *Client {
 }
 
 func (c *Client) GetName(id int) (string, error) {
+	for _, c := range customers {
+		if c.id == id {
+			return c.name, nil
+		}
+ 	}
 	return "", failure.New(NotFound)
 }

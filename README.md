@@ -51,9 +51,90 @@ func main() {
 error occurred: NotFound
 ```
 
+## テストを書いてみる
+
+以下の`GetName`をテストすることを考える。
+
+```go
+func (c *Client) GetName(id int) (string, error) {
+	for _, c := range customers {
+		if c.id == id {
+			return c.name, nil
+		}
+ 	}
+	return "", failure.New(NotFound)
+}
+```
+
+以下のようにすればPASSする。
+
+気になったところは以下。
+
+- `wantErr`の型が`failure.StringCode`になったが、正しい？それ以外の型が出てこないのかまだわかっていない
+- 正常系は、`wantErr`を`nil`にしたい（1つ目のテストにあるように`""`になってしまった）
+
+でも上記くらいでほとんど実用では困らなそう。  
+標準エラーもwrapするなどして、`failure`に統一してしまえば、
+`if err != nil && !failure.Is(err, tt.wantErr) {`
+のチェックしか出てこない（はず）なので、きれいだと思う。
+
+```go
+func TestClient_GetName(t *testing.T) {
+	type fields struct {
+		user string
+	}
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr failure.StringCode
+	}{
+		{
+			name: "Alice",
+			args: args{
+				id: 0,
+			},
+			want:    "Alice",
+			wantErr: "",
+		},
+		{
+			name: "",
+			args: args{
+				id: -1,
+			},
+			want:    "",
+			wantErr: NotFound,
+		},
+	}
+
+	_ = NewCustomer("Alice", "alice@example.com")
+	_ = NewCustomer("Bob", "bob@example.com")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				user: tt.fields.user,
+			}
+			got, err := c.GetName(tt.args.id)
+			if err != nil && !failure.Is(err, tt.wantErr) {
+				t.Errorf("GetName() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("GetName() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+	cleanUpCustomers()
+}
+```
+
 ## エラーをwrapする
 
-
+TODO: unimplemented
 
 
 
