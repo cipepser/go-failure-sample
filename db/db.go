@@ -25,6 +25,7 @@ func NewCustomer(name, address string) *Customer {
 	return c
 }
 
+// customers represent GLOBAL STATE
 var customers []*Customer
 
 func ShowCustomers() error {
