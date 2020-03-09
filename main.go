@@ -22,4 +22,8 @@ func main() {
 	if err := db.ShowCustomers(); err != nil {
 		panic(err)
 	}
+
+	if err := c.CheckPermitted("mallory@example.com"); err != nil {
+		panic(err)
+	}
 }

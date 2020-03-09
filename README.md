@@ -144,6 +144,12 @@ TODO: unimplemented
 ホワイトリスト形式にしたため、ファイル自体が開けない場合もアクセス遮断する。
 要はファイルを開けない場合のアクセス遮断で、wrapを実現する。
 
+`whitelist.txt`
+
+```text
+alice@example.com
+bob@example.com
+```
 
 
 ## References
