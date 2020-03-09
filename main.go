@@ -17,6 +17,9 @@ func main() {
 		fmt.Println("============ Error ============")
 		fmt.Printf("Error = %v\n", err)
 
+		code, _ := failure.CodeOf(err)
+		fmt.Printf("Code = %v\n", code)
+
 		msg, _ := failure.MessageOf(err)
 		fmt.Printf("Message = %v\n", msg)
 

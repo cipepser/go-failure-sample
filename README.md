@@ -226,6 +226,7 @@ func main() {
 ❯ go run main.go
 ============ Error ============
 Error = db.(*Client).CheckPermitted: code(Forbidden)
+Code = Forbidden
 Message =
 CallStack = db.(*Client).CheckPermitted: main.main: runtime.main: goexit
 Cause = code(Forbidden)
@@ -257,6 +258,7 @@ Cause = code(Forbidden)
 ❯ go run main.go
 ============ Error ============
 Error = db.(*Client).CheckPermitted: package=os: failed to open whitelist.txt: open whitelist.txt: no such file or directory
+Code = <nil>
 Message = failed to open whitelist.txt
 CallStack = db.(*Client).CheckPermitted: main.main: runtime.main: goexit
 Cause = no such file or directory
