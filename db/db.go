@@ -68,7 +68,7 @@ func (c *Client) GetName(id int) (string, error) {
 func (c *Client) CheckPermitted(address string) error {
 	f, err := os.Open(WHITELIST)
 	if err != nil {
-		return failure.Wrap(err,
+		return failure.Translate(err, FORBIDDEN,
 			failure.Context{"package": "os"},
 			failure.Messagef("failed to open %s", WHITELIST),
 		)

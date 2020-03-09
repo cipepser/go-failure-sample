@@ -276,6 +276,58 @@ Cause = no such file or directory
     [runtime.goexit] /usr/local/Cellar/go/1.13.5/libexec/src/runtime/asm_amd64.s:1357
 ```
 
+`Code = <nil>`になった。
+Detailのほうに書いてあるとおり、`*os.PathError`が実際のエラーなのだが、
+自前で実装している範囲で単純に`Wrap`するだけだと`nil`になってしまう。
+そこで、以下を`failure.Translate`を使って書き換える。
+
+変更前
+
+```go
+		return failure.Wrap(err,
+			failure.Context{"package": "os"},
+			failure.Messagef("failed to open %s", WHITELIST),
+		)
+```
+
+変更後
+
+```go
+		return failure.Translate(err, FORBIDDEN,
+			failure.Context{"package": "os"},
+			failure.Messagef("failed to open %s", WHITELIST),
+		)
+```
+
+実行結果
+
+```text
+❯ go run main.go
+============ Error ============
+Error = db.(*Client).CheckPermitted: package=os: failed to open whitelist.txt: code(Forbidden): open whitelist.txt: no such file or directory
+Code = Forbidden
+Message = failed to open whitelist.txt
+CallStack = db.(*Client).CheckPermitted: main.main: runtime.main: goexit
+Cause = no such file or directory
+
+============ Detail ============
+[db.(*Client).CheckPermitted] /Users/cipepser/.go/src/github.com/cipepser/go-failure-sample/db/db.go:71
+    package = os
+    message("failed to open whitelist.txt")
+    code(Forbidden)
+    *os.PathError("open whitelist.txt: no such file or directory")
+    syscall.Errno("no such file or directory")
+[CallStack]
+    [db.(*Client).CheckPermitted] /Users/cipepser/.go/src/github.com/cipepser/go-failure-sample/db/db.go:71
+    [main.main] /Users/cipepser/.go/src/github.com/cipepser/go-failure-sample/main.go:16
+    [runtime.main] /usr/local/Cellar/go/1.13.5/libexec/src/runtime/proc.go:203
+    [runtime.goexit] /usr/local/Cellar/go/1.13.5/libexec/src/runtime/asm_amd64.s:1357
+```
+
+`Code = Forbidden`になった。しかもDetailのほうは`*os.PathError`のままなので、原因を追うことができる。  
+最終的にどのエラーを返すのかは、ドメインに応じて設計する必要があるが、設計さえすればやりたいことが実現できる。
+
+
 // TODO: db_testに書く
 
 
