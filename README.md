@@ -333,7 +333,71 @@ Cause = no such file or directory
 
 ## unwrap
 
-// TODO: unwrapして、switchでエラーのパターンマッチして、エラーハンドリングしたい
+`whitelist.txt`が存在しない状態とする。
+
+```go
+func main() {
+	c := db.NewClient("user")
+	if err := c.CheckPermitted("mallory@example.com"); err != nil {
+		fmt.Println("============ Unwrap ============")
+		iter := failure.NewIterator(err)
+		for iter.Next() {
+			fmt.Println("***********")
+			err := iter.Error()
+			fmt.Printf("Error = %v\n", err)
+			code, ok := failure.CodeOf(err)
+			if !ok {
+				fmt.Println("not ok")
+				continue
+			}
+			switch code {
+			case db.Forbidden:
+				fmt.Println(db.Forbidden)
+			case db.NotFound:
+				fmt.Println(db.NotFound)
+			default:
+				fmt.Println("default")
+			}
+		}
+	}
+}
+```
+
+実行結果
+
+```text
+============ Unwrap ============
+***********
+Error = db.(*Client).CheckPermitted: package=os: failed to open whitelist.txt: code(Forbidden): open whitelist.txt: no such file or directory
+Forbidden
+***********
+Error = db.(*Client).CheckPermitted: package=os: failed to open whitelist.txt: code(Forbidden): open whitelist.txt: no such file or directory
+Forbidden
+***********
+Error = package=os: failed to open whitelist.txt: code(Forbidden): open whitelist.txt: no such file or directory
+Forbidden
+***********
+Error = failed to open whitelist.txt: code(Forbidden): open whitelist.txt: no such file or directory
+Forbidden
+***********
+Error = code(Forbidden): open whitelist.txt: no such file or directory
+Forbidden
+***********
+Error = open whitelist.txt: no such file or directory
+not ok
+***********
+Error = no such file or directory
+not ok
+```
+
+- `Unwrap`メソッドが明示的にあるわけではないので、`failure.Iterator`を用いる
+→どこでWrapされているのかわからず全部出力するしかない？
+→TODO: そもそもどんなハンドリングをしたい？
+- `CodeOf`を使うことで、switch文を用いたエラーハンドリングが可能
+- `not ok`となるのは標準の`os` packageから。
+
+// TODO: うーん。たぶんstructにエラーに必要な情報を格納してreturnしたいんだよな
+
 
 
 ## References
