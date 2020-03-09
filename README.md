@@ -136,6 +136,14 @@ func TestClient_GetName(t *testing.T) {
 
 TODO: unimplemented
 
+例題として、以下を考える。
+
+- `whitelist.txt`を個別ファイルとして用意
+- リストに含まれる`address`のみをアクセス許可
+
+ホワイトリスト形式にしたため、ファイル自体が開けない場合もアクセス遮断する。
+要はファイルを開けない場合のアクセス遮断で、wrapを実現する。
+
 
 
 ## References
