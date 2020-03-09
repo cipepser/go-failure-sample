@@ -149,7 +149,7 @@ alice@example.com
 bob@example.com
 ```
 
-`whitelist.txt`の`Oepn`に失敗したり、ホワイトリストに存在しないアドレスの場合、`FORBIDDEN`エラーを返す関数として`CheckPermitted`を実装する。
+`whitelist.txt`の`Oepn`に失敗したり、ホワイトリストに存在しないアドレスの場合、`Forbidden`エラーを返す関数として`CheckPermitted`を実装する。
 許可されたアドレスにマッチした場合のみ、エラーが`nil`になる。[^1]
 
 [^1]: 実環境で使う場合には毎回ファイルを開き直すのはパフォーマンスが悪い。今回はエラーハンドリングしたいだけなので、こんな実装になった。
@@ -174,7 +174,7 @@ func (c *Client) CheckPermitted(address string) error {
 		}
 	}
 
-	return failure.New(FORBIDDEN)
+	return failure.New(Forbidden)
 }
 ```
 
@@ -293,7 +293,7 @@ Detailのほうに書いてあるとおり、`*os.PathError`が実際のエラ�
 変更後
 
 ```go
-		return failure.Translate(err, FORBIDDEN,
+		return failure.Translate(err, Forbidden,
 			failure.Context{"package": "os"},
 			failure.Messagef("failed to open %s", WHITELIST),
 		)

@@ -13,7 +13,7 @@ const (
 
 var (
 	NotFound  failure.StringCode = "NotFound"
-	FORBIDDEN failure.StringCode = "Forbidden"
+	Forbidden failure.StringCode = "Forbidden"
 )
 
 type Customer struct {
@@ -62,13 +62,13 @@ func (c *Client) GetName(id int) (string, error) {
 }
 
 // CheckPermitted ONLY returns `nil` in case of an input address is permitted.
-// Other cases, it returns an `FORBIDDEN` error.
+// Other cases, it returns an `Forbidden` error.
 // To wrap an error, we open WHITELIST file every time checking the list,
 // not using init function.
 func (c *Client) CheckPermitted(address string) error {
 	f, err := os.Open(WHITELIST)
 	if err != nil {
-		return failure.Translate(err, FORBIDDEN,
+		return failure.Translate(err, Forbidden,
 			failure.Context{"package": "os"},
 			failure.Messagef("failed to open %s", WHITELIST),
 		)
@@ -84,5 +84,7 @@ func (c *Client) CheckPermitted(address string) error {
 		}
 	}
 
-	return failure.New(FORBIDDEN)
+	return failure.New(Forbidden)
+
+
 }
