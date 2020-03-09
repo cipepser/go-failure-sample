@@ -13,17 +13,20 @@ func init() {
 
 func main() {
 	c := db.NewClient("user")
-	userId := 0
-	_, err := c.GetName(userId)
-	if failure.Is(err, db.NotFound) {
-		fmt.Println("error occurred: NotFound")
-	}
-
-	if err := db.ShowCustomers(); err != nil {
-		panic(err)
-	}
-
 	if err := c.CheckPermitted("mallory@example.com"); err != nil {
-		panic(err)
+		fmt.Println("============ Error ============")
+		fmt.Printf("Error = %v\n", err)
+
+		msg, _ := failure.MessageOf(err)
+		fmt.Printf("Message = %v\n", msg)
+
+		cs, _ := failure.CallStackOf(err)
+		fmt.Printf("CallStack = %v\n", cs)
+
+		fmt.Printf("Cause = %v\n", failure.CauseOf(err))
+
+		fmt.Println()
+		fmt.Println("============ Detail ============")
+		fmt.Printf("%+v\n", err)
 	}
 }
